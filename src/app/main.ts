@@ -1,6 +1,6 @@
-import '../style.css'
+import "../style.css";
 
-document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
+document.querySelector<HTMLDivElement>("#app")!.innerHTML = `
   <div>
     <h1>Network Intelligence Agent Exercise</h1>
     <p>Traffic Generator</p>
@@ -12,23 +12,40 @@ document.querySelector<HTMLDivElement>('#app')!.innerHTML = `
 
     <pre id="output">Click a button to see data...</pre>
   </div>
-`
+`;
 
-const btnUser = document.getElementById('btn-user') as HTMLButtonElement;
-const btnPosts = document.getElementById('btn-posts') as HTMLButtonElement;
-const output = document.getElementById('output') as HTMLPreElement;
+const btnUser = document.getElementById("btn-user") as HTMLButtonElement;
+const btnPosts = document.getElementById("btn-posts") as HTMLButtonElement;
+const output = document.getElementById("output") as HTMLPreElement;
 
 async function fetchData(url: string) {
-  output.textContent = 'Loading...';
+  output.textContent = "Loading...";
   try {
-    const response = await fetch(url); 
+    const response = await fetch(url);
     const data = await response.json();
-    
+
     output.textContent = JSON.stringify(data, null, 2);
   } catch (error) {
-    output.textContent = 'Error: ' + error;
+    output.textContent = "Error: " + error;
   }
 }
 
-btnUser.addEventListener('click', () => fetchData('https://randomuser.me/api/'));
-btnPosts.addEventListener('click', () => fetchData('https://jsonplaceholder.typicode.com/posts?_limit=5'));
+btnUser.addEventListener("click", () =>
+  fetchData("https://randomuser.me/api/"),
+);
+btnPosts.addEventListener("click", () =>
+  fetchData("https://jsonplaceholder.typicode.com/posts?_limit=5"),
+);
+
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker
+    .register(new URL("/service-worker.ts", import.meta.url), {
+      type: "module",
+    })
+    .then((registration) => {
+      console.log("SW Registered successfully:", registration.scope);
+    })
+    .catch((error) => {
+      console.error("SW Registration failed:", error);
+    });
+}
