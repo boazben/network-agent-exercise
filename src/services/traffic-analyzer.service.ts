@@ -1,5 +1,10 @@
 import { openDB } from "idb";
 import { TO_APPLY_STRATEGIES } from "../strategies/constants.strategy";
+import {
+  NETWORK_AGENT_INDEXED_DB_NAME,
+  NETWORK_AGENT_INDEXED_DB_VERSION,
+  NETWORK_AGENT_OBJECT_STORE_NAME,
+} from "./constants/index-db.constant";
 
 export function isResToAnalyze(response: Response): boolean {
   const contentType = response.headers.get("content-type");
@@ -25,17 +30,25 @@ export async function analyzeResponse(url: string, response: Response) {
 }
 
 export async function saveOrUpdateDB(url: string, newResults: any) {
-  const db = await openDB("NetworkAgentDB", 1, {
-    upgrade(db) {
-      if (db.objectStoreNames.contains("traffic")) {
-        db.deleteObjectStore("traffic");
-      }
-      db.createObjectStore("traffic", { keyPath: "url" });
-    },
-  });
+  const storeName = NETWORK_AGENT_OBJECT_STORE_NAME;
+  const dbName = NETWORK_AGENT_INDEXED_DB_NAME;
+  const dbVersion = NETWORK_AGENT_INDEXED_DB_VERSION;
 
-  const tx = db.transaction("traffic", "readwrite");
-  const store = tx.objectStore("traffic");
+  const db = await openDB(
+    dbName,
+    dbVersion,
+    {
+      upgrade(db) {
+        if (db.objectStoreNames.contains(storeName)) {
+          db.deleteObjectStore(storeName);
+        }
+        db.createObjectStore(storeName, { keyPath: "url" });
+      },
+    },
+  );
+
+  const tx = db.transaction(storeName, "readwrite");
+  const store = tx.objectStore(storeName);
 
   const existingRecord = await store.get(url);
 
@@ -72,12 +85,15 @@ function mergeData(oldData: any, newData: any) {
   return merged;
 }
 
-function mergeDeepCounters(oldObj: Record<string, number>, newObj: Record<string, number>) {
+function mergeDeepCounters(
+  oldObj: Record<string, number>,
+  newObj: Record<string, number>,
+) {
   const result = { ...oldObj };
-  
+
   for (const [key, value] of Object.entries(newObj)) {
     result[key] = (result[key] || 0) + (value as number);
   }
-  
+
   return result;
 }
