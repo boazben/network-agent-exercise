@@ -1,3 +1,5 @@
+import { analyzeResponse, isResToAnalyze } from "./src/services/traffic-analyzer.service";
+
 self.addEventListener("install", (event) => {
   console.log(
     "[Service Worker] Installing new version...",
@@ -42,20 +44,3 @@ self.addEventListener("fetch", (event: any) => {
     })(),
   );
 });
-
-
-async function analyzeResponse(url: string, response: Response) {
-  try {
-    const data = await response.json();
-    console.log(`[Analysis] Intercepted data from ${url}:`, data);
-  } catch (err) {
-    console.error("[Analysis] Failed to parse JSON:", err);
-  }
-}
-
-function isResToAnalyze(response: Response): boolean {
-  const contentType = response.headers.get("content-type");
-  const isJson = Boolean(contentType && contentType.includes("application/json"));
-  const isOkResponse = response.status >= 200 && response.status < 300;
-  return isJson && isOkResponse;
-}
