@@ -1,4 +1,4 @@
-import { getDB } from "./db.service"; // שימוש בשירות החדש
+import { getDB } from "./db.service";
 import { TO_APPLY_STRATEGIES } from "../strategies/constants.strategy";
 import { NETWORK_AGENT_OBJECT_STORE_NAME } from "./constants/index-db.constant";
 
