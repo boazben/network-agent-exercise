@@ -17,7 +17,7 @@ The easiest way to run the project is using Docker. It handles all dependencies 
 > **Note:** The container handles `npm install` on startup to ensure consistency.
 
 2. **Open your browser:**
-Go to [http://localhost:5173](https://www.google.com/search?q=http://localhost:5173)
+Go to [http://localhost:5173](http://localhost:5173/)
 
 ---
 
