@@ -72,7 +72,8 @@ function mergeDeepCounters(
 ) {
   const result = { ...oldObj };
   for (const [key, value] of Object.entries(newObj)) {
-    result[key] = (result[key] || 0) + (value as number);
+    const sum = (result[key] || 0) + (value as number);
+    result[key] = Math.round(sum * 100) / 100;
   }
   return result;
 }
